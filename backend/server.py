@@ -46,13 +46,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-def read_root():
+@app.get("/api/health")
+def health_check():
     return {
         "status": "online",
         "app": "SachCheck Fact-Checking Backend Brain",
-        "version": "1.0.0",
-        "docs_url": "http://127.0.0.1:8000/docs"
+        "version": "1.0.0"
     }
 
 class LogRequest(BaseModel):
