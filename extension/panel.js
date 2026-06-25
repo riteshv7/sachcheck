@@ -1,4 +1,4 @@
-const BACKEND_URL = "http://127.0.0.1:8000";
+const BACKEND_URL = "https://sachcheck-one.vercel.app";
 let activeSessionId = null;
 let isRecording = false;
 let timerInterval = null;
