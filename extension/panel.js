@@ -261,6 +261,17 @@ async function pollSessionStatus() {
   
   try {
     const response = await fetch(`${BACKEND_URL}/api/session/${activeSessionId}/status`);
+    if (response.status === 404) {
+      logToServer("warning", "Active session expired or server restarted. Cleaning up state.");
+      // Tell background script to stop recording and close offscreen document
+      chrome.runtime.sendMessage({ type: "STOP_CAPTURE" }, () => {
+        // Ignore errors if service worker is inactive
+        if (chrome.runtime.lastError) {}
+      });
+      resetUIState();
+      return;
+    }
+    
     if (!response.ok) {
       throw new Error(`Failed to fetch status: HTTP ${response.status}`);
     }
