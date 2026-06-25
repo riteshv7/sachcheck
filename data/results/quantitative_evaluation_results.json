@@ -1,0 +1,210 @@
+{
+  "dataset_summary": {
+    "total_statements": 15,
+    "check_worthy": 10,
+    "ignored": 5
+  },
+  "check_worthiness_wer_impact": {
+    "wer_0%": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "accuracy": 1.0,
+      "confusion_matrix": {
+        "TP": 10,
+        "FP": 0,
+        "FN": 0,
+        "TN": 5
+      }
+    },
+    "wer_10%": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "accuracy": 1.0,
+      "confusion_matrix": {
+        "TP": 10,
+        "FP": 0,
+        "FN": 0,
+        "TN": 5
+      }
+    },
+    "wer_20%": {
+      "precision": 1.0,
+      "recall": 0.9,
+      "f1_score": 0.9473684210526316,
+      "accuracy": 0.9333333333333333,
+      "confusion_matrix": {
+        "TP": 9,
+        "FP": 0,
+        "FN": 1,
+        "TN": 5
+      }
+    }
+  },
+  "rag_completeness": {
+    "average_score": 70.0,
+    "evaluations": [
+      {
+        "claim": "EPFO data ke mutabik pichle saal hi ek point teen crore jobs generate hui.",
+        "score": 100.0,
+        "details": [
+          {
+            "expected_fact": "EPFO payroll additions were around 1.3 crore in FY24",
+            "covered": true,
+            "explanation": "Heuristic match based on keyword overlap."
+          },
+          {
+            "expected_fact": "Net additions reflect formalisation of existing jobs rather than solely new job creation",
+            "covered": true,
+            "explanation": "Heuristic match based on keyword overlap."
+          }
+        ]
+      },
+      {
+        "claim": "Mudra loan scheme ke under humne 40 crore se zyada loans diye hain, jisse log self-employed ban rahe hain.",
+        "score": 100.0,
+        "details": [
+          {
+            "expected_fact": "Over 40 crore loans sanctioned under Mudra Yojana",
+            "covered": true,
+            "explanation": "Heuristic match based on keyword overlap."
+          },
+          {
+            "expected_fact": "Over 80% of Mudra loans are in the Shishu category (under 50,000 rupees)",
+            "covered": true,
+            "explanation": "Heuristic match based on keyword overlap."
+          }
+        ]
+      },
+      {
+        "claim": "Mudra loans se koi real long-term employment nahi create ho raha hai, average loan size bohot chota hai.",
+        "score": 100.0,
+        "details": [
+          {
+            "expected_fact": "Average Mudra loan size is small (around 62,000 rupees)",
+            "covered": true,
+            "explanation": "Heuristic match based on keyword overlap."
+          },
+          {
+            "expected_fact": "Labor Bureau survey indicates positive job creation but many are subsistence-level self-employment",
+            "covered": true,
+            "explanation": "Heuristic match based on keyword overlap."
+          }
+        ]
+      },
+      {
+        "claim": "Desh mein highway construction ki speed 37 kilometers per day tak pahunch gayi hai, jo pichle sarkar se teen guna hai.",
+        "score": 100.0,
+        "details": [
+          {
+            "expected_fact": "Peak highway construction speed reached 37 km/day in FY21",
+            "covered": true,
+            "explanation": "Heuristic match based on keyword overlap."
+          },
+          {
+            "expected_fact": "Ministry changed calculation methodology from linear length to lane-kilometers in 2018",
+            "covered": true,
+            "explanation": "Heuristic match based on keyword overlap."
+          }
+        ]
+      },
+      {
+        "claim": "Desh mein pichle 45 saal mein sabse zyada unemployment rate aaj hai, PLFS data isko proof karta hai.",
+        "score": 100.0,
+        "details": [
+          {
+            "expected_fact": "PLFS 2017-18 report showed a 45-year high unemployment rate of 6.1%",
+            "covered": true,
+            "explanation": "Heuristic match based on keyword overlap."
+          },
+          {
+            "expected_fact": "Subsequent annual PLFS reports show a declining trend, with unemployment falling to 3.2% in 2022-23",
+            "covered": true,
+            "explanation": "Heuristic match based on keyword overlap."
+          }
+        ]
+      },
+      {
+        "claim": "LPG cylinder ke daam 1000 rupees paar ho gaye hain, jabki padosi deshon mein ye aadh se kam price par mil raha hai.",
+        "score": 100.0,
+        "details": [
+          {
+            "expected_fact": "Domestic LPG cylinder price crossed 1,000 rupees in India",
+            "covered": true,
+            "explanation": "Heuristic match based on keyword overlap."
+          },
+          {
+            "expected_fact": "LPG prices in neighboring countries like Bangladesh and Nepal are comparable or higher when converted to INR",
+            "covered": true,
+            "explanation": "Heuristic match based on keyword overlap."
+          }
+        ]
+      },
+      {
+        "claim": "Desh mein har ghar tak bijli pahunch gayi hai, 100 percent rural electrification complete ho chuka hai.",
+        "score": 0.0,
+        "details": [
+          {
+            "expected_fact": "100% village electrification was declared in 2018 under Saubhagya scheme",
+            "covered": false,
+            "explanation": "Heuristic match based on keyword overlap."
+          },
+          {
+            "expected_fact": "Electrification of a village only requires 10% of households and public spaces to have power; many individual homes remained unelectrified",
+            "covered": false,
+            "explanation": "Heuristic match based on keyword overlap."
+          }
+        ]
+      },
+      {
+        "claim": "Ayushman Bharat scheme ke under 50 crore se zyada log cover hain, ye duniya ki sabse badi health insurance scheme hai.",
+        "score": 50.0,
+        "details": [
+          {
+            "expected_fact": "Ayushman Bharat PM-JAY aims to cover over 12 crore vulnerable families (approx. 50 crore individuals)",
+            "covered": true,
+            "explanation": "Heuristic match based on keyword overlap."
+          },
+          {
+            "expected_fact": "CAG audit reports have highlighted operational irregularities, including multiple cards linked to a single phone number",
+            "covered": false,
+            "explanation": "Heuristic match based on keyword overlap."
+          }
+        ]
+      },
+      {
+        "claim": "Desh ka petrol prices 100 rupees ke paar ho gaya hai, ye bilkul aam aadmi ke pocket par dacoity hai.",
+        "score": 50.0,
+        "details": [
+          {
+            "expected_fact": "Retail petrol prices crossed 100 rupees per liter in multiple Indian cities in 2021-2022",
+            "covered": true,
+            "explanation": "Heuristic match based on keyword overlap."
+          },
+          {
+            "expected_fact": "High prices are driven by international crude oil rates and high central/state taxes",
+            "covered": false,
+            "explanation": "Heuristic match based on keyword overlap."
+          }
+        ]
+      },
+      {
+        "claim": "Hamari sarkar ne pichle paanch saal mein renewable energy capacity ko double kiya hai, aur 175 GW ka target achieve kiya.",
+        "score": 0.0,
+        "details": [
+          {
+            "expected_fact": "India's renewable energy capacity reached around 120-130 GW (excluding large hydro) or 170+ GW (including large hydro) by 2023",
+            "covered": false,
+            "explanation": "Heuristic match based on keyword overlap."
+          },
+          {
+            "expected_fact": "The original target of 175 GW renewable capacity by 2022 was missed, though significant progress was made",
+            "covered": false,
+            "explanation": "Heuristic match based on keyword overlap."
+          }
+        ]
+      }
+    ]
+  }
+}

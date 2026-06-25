@@ -1,0 +1,36 @@
+{
+  "transcript_file": "transcript_2.txt",
+  "summary": {
+    "total_claims_detected": 5,
+    "check_worthy_count": 5,
+    "ignored_count": 0
+  },
+  "context_cards": [
+    {
+      "claim_text": "Humne national highways ki total length ko double kar diya hai.",
+      "speaker": "Neta",
+      "error": "Failed to generate context card: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+    },
+    {
+      "claim_text": "In 2014, India had only about 91,287 kilometers of national highways.",
+      "speaker": "Neta",
+      "error": "Failed to generate context card: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+    },
+    {
+      "claim_text": "Aaj 2024 mein, yeh badhkar 1,46,000 kilometers se zyada ho chuki hai.",
+      "speaker": "Neta",
+      "error": "Failed to generate context card: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+    },
+    {
+      "claim_text": "highways banane ki speed pehle sirf 12 kilometers per day thi.",
+      "speaker": "Neta",
+      "error": "Failed to generate context card: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+    },
+    {
+      "claim_text": "Aaj hum har roz 37 kilometers se zyada highway bana rahe hain.",
+      "speaker": "Neta",
+      "error": "Failed to generate context card: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+    }
+  ],
+  "ignored_claims": []
+}

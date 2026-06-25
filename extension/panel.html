@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SachCheck — Live political fact-checker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="logo-dot animate-pulse"></div>
+        <h1 class="logo-text">SachCheck</h1>
+      </div>
+      <div class="header-controls">
+        <div class="session-timer" id="timer">00:00</div>
+      </div>
+    </header>
+
+    <!-- Settings Bar -->
+    <div class="settings-bar">
+      <div class="toggle-control">
+        <label class="switch">
+          <input type="checkbox" id="mock-toggle" checked>
+          <span class="slider round"></span>
+        </label>
+        <span class="toggle-label">Mock Mode (No API Cost)</span>
+      </div>
+      <div class="connection-status" id="connection-status">
+        <span class="status-indicator connected"></span>
+        <span class="status-text">Server Connected</span>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <main class="main-content">
+      <!-- Controls -->
+      <section class="control-section">
+        <button id="action-btn" class="btn btn-primary">Start Fact-Checking</button>
+      </section>
+
+      <!-- Live Transcript Panel -->
+      <section class="panel-section transcript-section">
+        <div class="section-header">
+          <h2>Live Transcript</h2>
+          <span class="badge" id="transcript-count">0 turns</span>
+        </div>
+        <div class="scroll-container" id="transcript-container">
+          <div class="empty-state" id="transcript-empty">
+            <p>Click start and play audio in the tab to see transcriptions.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Context Cards Panel -->
+      <section class="panel-section cards-section">
+        <div class="section-header">
+          <h2>Grounded Context Cards</h2>
+          <span class="badge" id="cards-count">0 cards</span>
+        </div>
+        <div class="scroll-container" id="cards-container">
+          <div class="empty-state" id="cards-empty">
+            <p>Check-worthy claims will appear here with grounded sources.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>SachCheck Live Fact-Checker • Localhost Edition</p>
+    </footer>
+  </div>
+  <script src="panel.js"></script>
+</body>
+</html>

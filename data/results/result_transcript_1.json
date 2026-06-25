@@ -1,0 +1,46 @@
+{
+  "transcript_file": "transcript_1.txt",
+  "summary": {
+    "total_claims_detected": 7,
+    "check_worthy_count": 7,
+    "ignored_count": 0
+  },
+  "context_cards": [
+    {
+      "claim_text": "Government ne har saal 2 crore jobs dene ka promise kiya tha.",
+      "speaker": "Pravakta A",
+      "error": "Failed to generate context card: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+    },
+    {
+      "claim_text": "But the truth is, pichle 45 saal mein sabse zyada unemployment rate aaj hai.",
+      "speaker": "Pravakta A",
+      "error": "Failed to generate context card: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+    },
+    {
+      "claim_text": "PLFS data dikhata hai ki youth unemployment 15% touch kar raha hai.",
+      "speaker": "Pravakta A",
+      "error": "Failed to generate context card: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+    },
+    {
+      "claim_text": "Hamari sarkar ne EPFO data ke mutabik pichle saal hi 1.3 crore nayi jobs generate ki hain.",
+      "speaker": "Pravakta B",
+      "error": "Failed to generate context card: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+    },
+    {
+      "claim_text": "Aur mudra loan scheme ke under humne 40 crore se zyada loans diye hain, jisse log self-employed ban rahe hain.",
+      "speaker": "Pravakta B",
+      "error": "Failed to generate context card: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+    },
+    {
+      "claim_text": "EPFO data real jobs nahi dikhata, wo sirf formalisation of labor dikhata hai.",
+      "speaker": "Pravakta A",
+      "error": "Failed to generate context card: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+    },
+    {
+      "claim_text": "Mudra loans se koi real long-term employment nahi create ho raha hai, average loan size bohot chota hai.",
+      "speaker": "Pravakta A",
+      "error": "Failed to generate context card: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+    }
+  ],
+  "ignored_claims": []
+}

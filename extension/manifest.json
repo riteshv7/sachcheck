@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "SachCheck",
+  "version": "1.0.0",
+  "description": "Real-time Hinglish political fact-checking assistant.",
+  "permissions": [
+    "tabCapture",
+    "activeTab",
+    "offscreen",
+    "sidePanel",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://localhost:8000/*",
+    "*://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Open SachCheck"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "session_id": "042b9cf2-ea96-4238-bebc-d750ced305bf",
+  "summary": {
+    "total_turns": 5,
+    "context_cards_count": 0,
+    "ignored_claims_count": 0
+  },
+  "transcript": [
+    {
+      "speaker": "Anchor",
+      "start_time": 0.0,
+      "end_time": 5.2,
+      "text": "Swagat hai aapka. Aaj hum baat karenge desh mein berozgari aur naukriyon ke baare mein. Hamare sath dono paksh ke pravakta hain."
+    },
+    {
+      "speaker": "Pravakta A",
+      "start_time": 5.5,
+      "end_time": 15.8,
+      "text": "Dekhiye, desh ke yuva aaj pareshan hain. Government ne har saal do crore naukriyon dene ka promise kiya tha. But the truth is, pichle 45 saal mein sabse zyada unemployment rate aaj hai. PLFS data dikhata hai ki youth unemployment 15 percent touch kar raha hai."
+    },
+    {
+      "speaker": "Pravakta B",
+      "start_time": 16.2,
+      "end_time": 25.5,
+      "text": "Yeh bilkul galat baat hai. Hamari sarkar ne EPFO data ke mutabik pichle saal hi ek point teen crore nayi jobs generate ki hain. Aur mudra loan scheme ke under humne 40 crore se zyada loans diye hain, jisse log self-employed ban rahe hain."
+    },
+    {
+      "speaker": "Pravakta A",
+      "start_time": 25.8,
+      "end_time": 32.4,
+      "text": "EPFO data real jobs nahi dikhata, wo sirf formalisation of labor dikhata hai."
+    },
+    {
+      "speaker": "Pravakta A",
+      "start_time": 32.6,
+      "end_time": 41.0,
+      "text": "Mudra loans se koi real long-term employment nahi create ho raha hai, average loan size bohot chota hai."
+    }
+  ],
+  "context_cards": [],
+  "ignored_claims": []
+}

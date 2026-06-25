@@ -1,0 +1,147 @@
+[
+  {
+    "id": "ts_001",
+    "text": "Swagat hai aapka. Aaj hum baat karenge desh ke vikas ke baare mein.",
+    "speaker": "Anchor",
+    "check_worthy_ground_truth": false,
+    "reason_ignored": "General greeting and introduction, no factual claim."
+  },
+  {
+    "id": "ts_002",
+    "text": "Hum desh ke har garib ko agle paanch saal mein pakka ghar denge, ye mera waada hai.",
+    "speaker": "Pravakta B",
+    "check_worthy_ground_truth": false,
+    "reason_ignored": "Future election promise and political rhetoric, not checkable as a historical fact."
+  },
+  {
+    "id": "ts_003",
+    "text": "Mera manna hai ki hamari sarkar ne har sector mein bohot achha kaam kiya hai.",
+    "speaker": "Pravakta B",
+    "check_worthy_ground_truth": false,
+    "reason_ignored": "Subjective opinion and general praise, not a verifiable statistic."
+  },
+  {
+    "id": "ts_004",
+    "text": "EPFO data ke mutabik pichle saal hi ek point teen crore jobs generate hui.",
+    "speaker": "Pravakta B",
+    "check_worthy_ground_truth": true,
+    "claim_type": "number",
+    "expected_facts": [
+      "EPFO payroll additions were around 1.3 crore in FY24",
+      "Net additions reflect formalisation of existing jobs rather than solely new job creation"
+    ]
+  },
+  {
+    "id": "ts_005",
+    "text": "Mudra loan scheme ke under humne 40 crore se zyada loans diye hain, jisse log self-employed ban rahe hain.",
+    "speaker": "Pravakta B",
+    "check_worthy_ground_truth": true,
+    "claim_type": "number",
+    "expected_facts": [
+      "Over 40 crore loans sanctioned under Mudra Yojana",
+      "Over 80% of Mudra loans are in the Shishu category (under 50,000 rupees)"
+    ]
+  },
+  {
+    "id": "ts_006",
+    "text": "Mudra loans se koi real long-term employment nahi create ho raha hai, average loan size bohot chota hai.",
+    "speaker": "Pravakta A",
+    "check_worthy_ground_truth": true,
+    "claim_type": "cause",
+    "expected_facts": [
+      "Average Mudra loan size is small (around 62,000 rupees)",
+      "Labor Bureau survey indicates positive job creation but many are subsistence-level self-employment"
+    ]
+  },
+  {
+    "id": "ts_007",
+    "text": "Desh mein highway construction ki speed 37 kilometers per day tak pahunch gayi hai, jo pichle sarkar se teen guna hai.",
+    "speaker": "Pravakta B",
+    "check_worthy_ground_truth": true,
+    "claim_type": "comparison",
+    "expected_facts": [
+      "Peak highway construction speed reached 37 km/day in FY21",
+      "Ministry changed calculation methodology from linear length to lane-kilometers in 2018"
+    ]
+  },
+  {
+    "id": "ts_008",
+    "text": "Desh mein pichle 45 saal mein sabse zyada unemployment rate aaj hai, PLFS data isko proof karta hai.",
+    "speaker": "Pravakta A",
+    "check_worthy_ground_truth": true,
+    "claim_type": "comparison",
+    "expected_facts": [
+      "PLFS 2017-18 report showed a 45-year high unemployment rate of 6.1%",
+      "Subsequent annual PLFS reports show a declining trend, with unemployment falling to 3.2% in 2022-23"
+    ]
+  },
+  {
+    "id": "ts_009",
+    "text": "LPG cylinder ke daam 1000 rupees paar ho gaye hain, jabki padosi deshon mein ye aadh se kam price par mil raha hai.",
+    "speaker": "Pravakta A",
+    "check_worthy_ground_truth": true,
+    "claim_type": "comparison",
+    "expected_facts": [
+      "Domestic LPG cylinder price crossed 1,000 rupees in India",
+      "LPG prices in neighboring countries like Bangladesh and Nepal are comparable or higher when converted to INR"
+    ]
+  },
+  {
+    "id": "ts_010",
+    "text": "Desh mein har ghar tak bijli pahunch gayi hai, 100 percent rural electrification complete ho chuka hai.",
+    "speaker": "Pravakta B",
+    "check_worthy_ground_truth": true,
+    "claim_type": "number",
+    "expected_facts": [
+      "100% village electrification was declared in 2018 under Saubhagya scheme",
+      "Electrification of a village only requires 10% of households and public spaces to have power; many individual homes remained unelectrified"
+    ]
+  },
+  {
+    "id": "ts_011",
+    "text": "Ayushman Bharat scheme ke under 50 crore se zyada log cover hain, ye duniya ki sabse badi health insurance scheme hai.",
+    "speaker": "Pravakta B",
+    "check_worthy_ground_truth": true,
+    "claim_type": "number",
+    "expected_facts": [
+      "Ayushman Bharat PM-JAY aims to cover over 12 crore vulnerable families (approx. 50 crore individuals)",
+      "CAG audit reports have highlighted operational irregularities, including multiple cards linked to a single phone number"
+    ]
+  },
+  {
+    "id": "ts_012",
+    "text": "Aap dekhiyega, aane wale chunaav mein janta inko bohot bada sabak sikhayegi.",
+    "speaker": "Pravakta A",
+    "check_worthy_ground_truth": false,
+    "reason_ignored": "Future political prediction, not checkable as a historical fact."
+  },
+  {
+    "id": "ts_013",
+    "text": "Humne har saal do crore naukriyan dene ka vada kiya tha, lekin inhone sirf dhokha diya.",
+    "speaker": "Pravakta A",
+    "check_worthy_ground_truth": false,
+    "reason_ignored": "Historical election promise critique and general political rhetoric, not a specific statistical claim."
+  },
+  {
+    "id": "ts_014",
+    "text": "Desh ka petrol prices 100 rupees ke paar ho gaya hai, ye bilkul aam aadmi ke pocket par dacoity hai.",
+    "speaker": "Pravakta A",
+    "check_worthy_ground_truth": true,
+    "claim_type": "number",
+    "expected_facts": [
+      "Retail petrol prices crossed 100 rupees per liter in multiple Indian cities in 2021-2022",
+      "High prices are driven by international crude oil rates and high central/state taxes"
+    ]
+  },
+  {
+    "id": "ts_015",
+    "text": "Hamari sarkar ne pichle paanch saal mein renewable energy capacity ko double kiya hai, aur 175 GW ka target achieve kiya.",
+    "speaker": "Pravakta B",
+    "check_worthy_ground_truth": true,
+    "claim_type": "number",
+    "expected_facts": [
+      "India's renewable energy capacity reached around 120-130 GW (excluding large hydro) or 170+ GW (including large hydro) by 2023",
+      "The original target of 175 GW renewable capacity by 2022 was missed, though significant progress was made"
+    ]
+  }
+]

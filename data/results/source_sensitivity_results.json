@@ -1,0 +1,466 @@
+[
+  {
+    "claim_id": "exp_001",
+    "claim_text": "Mudra loan scheme ke under humne 40 crore se zyada loans diye hain, jisse log self-employed ban rahe hain.",
+    "comparisons": {
+      "Set_A_Gov": {
+        "source_set_name": "Government-only",
+        "confidence_level": "High",
+        "grounded_facts_count": 2,
+        "missing_context_count": 0,
+        "card": {
+          "claim_text": "Mudra loan scheme ke under humne 40 crore se zyada loans diye hain, jisse log self-employed ban rahe hain.",
+          "confidence_level": "High",
+          "confidence_reason": "Relying on official PIB and ministry data confirming the count of over 40 crore disbursements.",
+          "grounded_context": [
+            {
+              "point": "PIB reports over 43 crore Mudra loans have been sanctioned as of FY24 [1].",
+              "source_citations": [
+                1
+              ]
+            },
+            {
+              "point": "Official ministry stats show ₹24 lakh crore has been disbursed to foster credit access [2].",
+              "source_citations": [
+                2
+              ]
+            }
+          ],
+          "missing_context": [],
+          "source_disagreement": "None. Government sources do not report operational criticisms or small average sizes.",
+          "sources_used": [
+            {
+              "index": 1,
+              "title": "PM Mudra Yojana Milestones - PIB",
+              "url": "https://pib.gov.in"
+            }
+          ]
+        }
+      },
+      "Set_B_News": {
+        "source_set_name": "News-only",
+        "confidence_level": "High",
+        "grounded_facts_count": 2,
+        "missing_context_count": 1,
+        "card": {
+          "claim_text": "Mudra loan scheme ke under humne 40 crore se zyada loans diye hain, jisse log self-employed ban rahe hain.",
+          "confidence_level": "High",
+          "confidence_reason": "News reports cover both government figures and critiques of loan sizes.",
+          "grounded_context": [
+            {
+              "point": "Mainstream news outlets report that 40+ crore loans were sanctioned under the scheme [1].",
+              "source_citations": [
+                1
+              ]
+            },
+            {
+              "point": "Reports quote economists warning that the average loan size is small and may not generate long-term hiring [2].",
+              "source_citations": [
+                2
+              ]
+            }
+          ],
+          "missing_context": [
+            "News articles point out that a large percentage of self-employed micro-ventures shut down within the first two years."
+          ],
+          "source_disagreement": "Disagreement highlighted between government employment claims and independent banking analyses.",
+          "sources_used": [
+            {
+              "index": 1,
+              "title": "The Impact of Mudra Loans - Indian Express",
+              "url": "https://indianexpress.com"
+            }
+          ]
+        }
+      },
+      "Set_C_FC": {
+        "source_set_name": "Fact-Checkers-only",
+        "confidence_level": "High",
+        "grounded_facts_count": 2,
+        "missing_context_count": 1,
+        "card": {
+          "claim_text": "Mudra loan scheme ke under humne 40 crore se zyada loans diye hain, jisse log self-employed ban rahe hain.",
+          "confidence_level": "High",
+          "confidence_reason": "Fact-checking agencies provide detailed breakdowns of the Shishu loan category dominance.",
+          "grounded_context": [
+            {
+              "point": "Fact-checks verify the count of 40 crore loans but highlight that over 83% of them are 'Shishu' loans (under ₹50,000) [1].",
+              "source_citations": [
+                1
+              ]
+            },
+            {
+              "point": "Average loan size across all Mudra disbursements is ₹62,000, raising doubts about their ability to create sustainable payroll jobs [2].",
+              "source_citations": [
+                2
+              ]
+            }
+          ],
+          "missing_context": [
+            "A massive portion of the credit is allocated to micro-entities for subsistence-level working capital rather than job-creating capital investments."
+          ],
+          "source_disagreement": "Clear methodological disagreement. The government counts credit accounts as jobs, whereas labor economists classify them as subsistence self-employment.",
+          "sources_used": [
+            {
+              "index": 1,
+              "title": "Analyzing Mudra Loan Job Claims - BOOM Fact Check",
+              "url": "https://boomlive.in"
+            }
+          ]
+        }
+      },
+      "Set_D_Mixed": {
+        "source_set_name": "Standard/Mixed",
+        "confidence_level": "High",
+        "grounded_facts_count": 2,
+        "missing_context_count": 1,
+        "card": {
+          "claim_text": "Mudra loan scheme ke under humne 40 crore se zyada loans diye hain, jisse log self-employed ban rahe hain.",
+          "confidence_level": "High",
+          "confidence_reason": "Mixed sources allow a balanced synthesis of official counts and structural context.",
+          "grounded_context": [
+            {
+              "point": "Over 43 crore loans worth ₹24 lakh crore have been sanctioned [1].",
+              "source_citations": [
+                1
+              ]
+            },
+            {
+              "point": "Over 80% of these disbursements are under ₹50,000 (Shishu category) [2].",
+              "source_citations": [
+                2
+              ]
+            }
+          ],
+          "missing_context": [
+            "Small loan sizes limit the scale of business expansion and job creation."
+          ],
+          "source_disagreement": "Government statistics emphasize total credit reach, while independent economists focus on loan size adequacy.",
+          "sources_used": [
+            {
+              "index": 1,
+              "title": "PIB Press Release",
+              "url": "https://pib.gov.in"
+            },
+            {
+              "index": 2,
+              "title": "BOOM Fact Check",
+              "url": "https://boomlive.in"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "claim_id": "exp_002",
+    "claim_text": "Desh mein highway construction ki speed 37 kilometers per day tak pahunch gayi hai, jo pichle sarkar se teen guna hai.",
+    "comparisons": {
+      "Set_A_Gov": {
+        "source_set_name": "Government-only",
+        "confidence_level": "High",
+        "grounded_facts_count": 1,
+        "missing_context_count": 0,
+        "card": {
+          "claim_text": "Desh mein highway construction ki speed 37 kilometers per day tak pahunch gayi hai, jo pichle sarkar se teen guna hai.",
+          "confidence_level": "High",
+          "confidence_reason": "Based directly on MoRTH reports documenting the 37 km/day peak rate in FY21.",
+          "grounded_context": [
+            {
+              "point": "Ministry reports show highway construction speed reached a peak of 37 km/day during FY21, compared to around 12-16 km/day under the previous administration [1].",
+              "source_citations": [
+                1
+              ]
+            }
+          ],
+          "missing_context": [],
+          "source_disagreement": "None. Official government sources do not document the change in measurement methodology.",
+          "sources_used": [
+            {
+              "index": 1,
+              "title": "Annual Performance Report - MoRTH",
+              "url": "https://morth.nic.in"
+            }
+          ]
+        }
+      },
+      "Set_B_News": {
+        "source_set_name": "News-only",
+        "confidence_level": "High",
+        "grounded_facts_count": 2,
+        "missing_context_count": 1,
+        "card": {
+          "claim_text": "Desh mein highway construction ki speed 37 kilometers per day tak pahunch gayi hai, jo pichle sarkar se teen guna hai.",
+          "confidence_level": "High",
+          "confidence_reason": "Mixed sources successfully capture the speed stats and the lane-kilometer methodology context.",
+          "grounded_context": [
+            {
+              "point": "Peak construction speed reached 37 km/day in FY21 [1].",
+              "source_citations": [
+                1
+              ]
+            },
+            {
+              "point": "Methodology changed from linear length to lane-kilometers in 2018, distorting direct historical comparisons [2].",
+              "source_citations": [
+                2
+              ]
+            }
+          ],
+          "missing_context": [
+            "Direct comparison to pre-2018 speed is distorted by the lane-kilometer measurement shift."
+          ],
+          "source_disagreement": "Ministry reports emphasize lane-kilometer speed, while fact-checkers point out the false historical comparison.",
+          "sources_used": [
+            {
+              "index": 1,
+              "title": "MoRTH Annual Report",
+              "url": "https://morth.nic.in"
+            },
+            {
+              "index": 2,
+              "title": "Factly Fact Check",
+              "url": "https://factly.in"
+            }
+          ]
+        }
+      },
+      "Set_C_FC": {
+        "source_set_name": "Fact-Checkers-only",
+        "confidence_level": "High",
+        "grounded_facts_count": 2,
+        "missing_context_count": 1,
+        "card": {
+          "claim_text": "Desh mein highway construction ki speed 37 kilometers per day tak pahunch gayi hai, jo pichle sarkar se teen guna hai.",
+          "confidence_level": "High",
+          "confidence_reason": "Fact-checkers explain the 2018 methodology shift that inflate post-2018 construction speeds.",
+          "grounded_context": [
+            {
+              "point": "MoRTH achieved a 37 km/day peak rate in FY21, but the subsequent average has settled between 28 and 32 km/day [1].",
+              "source_citations": [
+                1
+              ]
+            },
+            {
+              "point": "In 2018, the ministry changed its metric from 'linear length' to 'lane kilometers' (multiplying physical length by number of lanes built) [2].",
+              "source_citations": [
+                2
+              ]
+            }
+          ],
+          "missing_context": [
+            "Comparing linear kilometers (pre-2018) to lane kilometers (post-2018) is a false comparison, as multi-lane highways constructed post-2018 appear multi-fold faster than the old linear metric would indicate."
+          ],
+          "source_disagreement": "Disagreement between raw ministry speed claims and methodological fact-checks.",
+          "sources_used": [
+            {
+              "index": 1,
+              "title": "Highway Length Measurement Shift - MoRTH Circular",
+              "url": "https://morth.nic.in"
+            },
+            {
+              "index": 2,
+              "title": "Is Highway Speed Really Three Times Faster? - Factly",
+              "url": "https://factly.in"
+            }
+          ]
+        }
+      },
+      "Set_D_Mixed": {
+        "source_set_name": "Standard/Mixed",
+        "confidence_level": "High",
+        "grounded_facts_count": 2,
+        "missing_context_count": 1,
+        "card": {
+          "claim_text": "Desh mein highway construction ki speed 37 kilometers per day tak pahunch gayi hai, jo pichle sarkar se teen guna hai.",
+          "confidence_level": "High",
+          "confidence_reason": "Mixed sources successfully capture the speed stats and the lane-kilometer methodology context.",
+          "grounded_context": [
+            {
+              "point": "Peak construction speed reached 37 km/day in FY21 [1].",
+              "source_citations": [
+                1
+              ]
+            },
+            {
+              "point": "Methodology changed from linear length to lane-kilometers in 2018, distorting direct historical comparisons [2].",
+              "source_citations": [
+                2
+              ]
+            }
+          ],
+          "missing_context": [
+            "Direct comparison to pre-2018 speed is distorted by the lane-kilometer measurement shift."
+          ],
+          "source_disagreement": "Ministry reports emphasize lane-kilometer speed, while fact-checkers point out the false historical comparison.",
+          "sources_used": [
+            {
+              "index": 1,
+              "title": "MoRTH Annual Report",
+              "url": "https://morth.nic.in"
+            },
+            {
+              "index": 2,
+              "title": "Factly Fact Check",
+              "url": "https://factly.in"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "claim_id": "exp_003",
+    "claim_text": "Desh mein pichle 45 saal mein sabse zyada unemployment rate aaj hai, PLFS data isko proof karta hai.",
+    "comparisons": {
+      "Set_A_Gov": {
+        "source_set_name": "Government-only",
+        "confidence_level": "High",
+        "grounded_facts_count": 1,
+        "missing_context_count": 1,
+        "card": {
+          "claim_text": "Desh mein pichle 45 saal mein sabse zyada unemployment rate aaj hai, PLFS data isko proof karta hai.",
+          "confidence_level": "High",
+          "confidence_reason": "Relying on official PLFS annual trends showing a decline in unemployment.",
+          "grounded_context": [
+            {
+              "point": "Annual PLFS surveys show that the unemployment rate has steadily declined from 6.1% in 2017-18 to 3.2% in 2022-23 [1].",
+              "source_citations": [
+                1
+              ]
+            }
+          ],
+          "missing_context": [
+            "The claim of a '45-year high' is outdated and ignores subsequent years of official survey data."
+          ],
+          "source_disagreement": "None on the official numbers, but government reports do not mention independent employment metrics.",
+          "sources_used": [
+            {
+              "index": 1,
+              "title": "Annual Report Periodic Labour Force Survey - MoSPI",
+              "url": "https://mospi.gov.in"
+            }
+          ]
+        }
+      },
+      "Set_B_News": {
+        "source_set_name": "News-only",
+        "confidence_level": "High",
+        "grounded_facts_count": 2,
+        "missing_context_count": 1,
+        "card": {
+          "claim_text": "Desh mein pichle 45 saal mein sabse zyada unemployment rate aaj hai, PLFS data isko proof karta hai.",
+          "confidence_level": "High",
+          "confidence_reason": "Balanced synthesis showing both the historical 2017-18 peak and the subsequent declining trend.",
+          "grounded_context": [
+            {
+              "point": "The 2017-18 PLFS recorded a 45-year high unemployment rate of 6.1% [1].",
+              "source_citations": [
+                1
+              ]
+            },
+            {
+              "point": "Subsequent annual surveys show a declining trend, reaching 3.2% in 2022-23 [2].",
+              "source_citations": [
+                2
+              ]
+            }
+          ],
+          "missing_context": [
+            "The 45-year high statistic is outdated and does not reflect current annual survey results."
+          ],
+          "source_disagreement": "Political debates focus on the 2017-18 peak, while official data tracks the declining trend.",
+          "sources_used": [
+            {
+              "index": 1,
+              "title": "PLFS Reports - MoSPI",
+              "url": "https://mospi.gov.in"
+            },
+            {
+              "index": 2,
+              "title": "BOOM Fact Check",
+              "url": "https://boomlive.in"
+            }
+          ]
+        }
+      },
+      "Set_C_FC": {
+        "source_set_name": "Fact-Checkers-only",
+        "confidence_level": "High",
+        "grounded_facts_count": 2,
+        "missing_context_count": 1,
+        "card": {
+          "claim_text": "Desh mein pichle 45 saal mein sabse zyada unemployment rate aaj hai, PLFS data isko proof karta hai.",
+          "confidence_level": "High",
+          "confidence_reason": "Fact-checks clarify that the 45-year high refers specifically to the 2017-18 survey year.",
+          "grounded_context": [
+            {
+              "point": "The 2017-18 PLFS survey recorded a 45-year high unemployment rate of 6.1% [1].",
+              "source_citations": [
+                1
+              ]
+            },
+            {
+              "point": "However, subsequent PLFS surveys report a decline to 3.2% in 2022-23 [2].",
+              "source_citations": [
+                2
+              ]
+            }
+          ],
+          "missing_context": [
+            "The speaker is presenting a historical 2017-18 data point as the current ('aaj') unemployment rate, omitting five subsequent years of declining statistics."
+          ],
+          "source_disagreement": "Fact-checkers verify that the 6.1% was a 45-year high, but clarify that using it as a present-day statistic is misleading.",
+          "sources_used": [
+            {
+              "index": 1,
+              "title": "Unemployment Rate in India Fact Check - BOOM Fact Check",
+              "url": "https://boomlive.in"
+            }
+          ]
+        }
+      },
+      "Set_D_Mixed": {
+        "source_set_name": "Standard/Mixed",
+        "confidence_level": "High",
+        "grounded_facts_count": 2,
+        "missing_context_count": 1,
+        "card": {
+          "claim_text": "Desh mein pichle 45 saal mein sabse zyada unemployment rate aaj hai, PLFS data isko proof karta hai.",
+          "confidence_level": "High",
+          "confidence_reason": "Balanced synthesis showing both the historical 2017-18 peak and the subsequent declining trend.",
+          "grounded_context": [
+            {
+              "point": "The 2017-18 PLFS recorded a 45-year high unemployment rate of 6.1% [1].",
+              "source_citations": [
+                1
+              ]
+            },
+            {
+              "point": "Subsequent annual surveys show a declining trend, reaching 3.2% in 2022-23 [2].",
+              "source_citations": [
+                2
+              ]
+            }
+          ],
+          "missing_context": [
+            "The 45-year high statistic is outdated and does not reflect current annual survey results."
+          ],
+          "source_disagreement": "Political debates focus on the 2017-18 peak, while official data tracks the declining trend.",
+          "sources_used": [
+            {
+              "index": 1,
+              "title": "PLFS Reports - MoSPI",
+              "url": "https://mospi.gov.in"
+            },
+            {
+              "index": 2,
+              "title": "BOOM Fact Check",
+              "url": "https://boomlive.in"
+            }
+          ]
+        }
+      }
+    }
+  }
+]
