@@ -1,7 +1,7 @@
 let mediaStream = null;
 let mediaRecorder = null;
 let audioCtx = null;
-const BACKEND_URL = "http://localhost:8000";
+const BACKEND_URL = "http://127.0.0.1:8000";
 
 // Listen for control messages from the service worker
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

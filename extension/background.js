@@ -1,7 +1,7 @@
 let offscreenCreated = false;
 let pendingRecording = null;
 let activeSession = null;
-const BACKEND_URL = "http://localhost:8000";
+const BACKEND_URL = "http://127.0.0.1:8000";
 
 // Remote Logger for debugging
 function logToServer(level, message, context = "") {
