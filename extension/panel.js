@@ -117,6 +117,40 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Run initial tab detection
   detectActiveTab();
 
+  function switchToLiveTab() {
+    tabLive.classList.add("active");
+    tabScan.classList.remove("active");
+    liveContent.style.display = "flex";
+    scanContent.style.display = "none";
+  }
+
+  function startUIForSession(session) {
+    switchToLiveTab();
+    activeSessionId = session.sessionId;
+    isRecording = true;
+    
+    mockToggle.checked = session.mock;
+    mockToggle.disabled = true;
+    
+    actionBtn.disabled = false;
+    actionBtn.textContent = "Stop Fact-Checking";
+    actionBtn.className = "btn btn-danger";
+    logoDot.classList.add("active");
+    
+    renderedTurnsCount = 0;
+    renderedCardsSignatures.clear();
+    transcriptContainer.innerHTML = "";
+    cardsContainer.innerHTML = "";
+    transcriptEmpty.style.display = "none";
+    cardsEmpty.style.display = "none";
+    
+    sessionStartTime = session.startTime;
+    if (timerInterval) clearInterval(timerInterval);
+    if (pollInterval) clearInterval(pollInterval);
+    timerInterval = setInterval(updateTimer, 1000);
+    pollInterval = setInterval(pollSessionStatus, 2000);
+  }
+
   // Synchronize with any active session
   logToServer("info", "Sending PANEL_READY handshake to background service worker...");
   chrome.runtime.sendMessage({ type: "PANEL_READY" }, (response) => {
@@ -127,30 +161,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     if (response && response.sessionId) {
       logToServer("info", "Synchronized successfully with active background session", response);
-      
-      activeSessionId = response.sessionId;
-      isRecording = true;
-      
-      mockToggle.checked = response.mock;
-      mockToggle.disabled = true;
-      
-      actionBtn.disabled = false;
-      actionBtn.textContent = "Stop Fact-Checking";
-      actionBtn.className = "btn btn-danger";
-      logoDot.classList.add("active");
-      
-      renderedTurnsCount = 0;
-      renderedCardsSignatures.clear();
-      transcriptContainer.innerHTML = "";
-      cardsContainer.innerHTML = "";
-      transcriptEmpty.style.display = "none";
-      cardsEmpty.style.display = "none";
-      
-      sessionStartTime = response.startTime;
-      timerInterval = setInterval(updateTimer, 1000);
-      pollInterval = setInterval(pollSessionStatus, 2000);
+      startUIForSession(response);
     } else {
       logToServer("info", "No active background session found on handshake.");
+    }
+  });
+
+  // Listen for messages from background script (e.g. session starts via toolbar button click)
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === "SESSION_STARTED") {
+      logToServer("info", "Received SESSION_STARTED event from background service worker", message.session);
+      startUIForSession(message.session);
     }
   });
 });

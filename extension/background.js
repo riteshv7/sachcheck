@@ -101,6 +101,12 @@ chrome.action.onClicked.addListener((tab) => {
       // Create offscreen doc
       await createOffscreenDocument();
 
+      // Notify the side panel (if open) that the session has started
+      chrome.runtime.sendMessage({
+        type: "SESSION_STARTED",
+        session: activeSession
+      }).catch((e) => logToServer("info", "Could not send SESSION_STARTED message to panel (it might still be opening/loading)", e.message));
+
     } catch (err) {
       logToServer("error", "Failed to initialize session after capture", err.message);
     }
