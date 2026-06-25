@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 # Ensure backend directory is in the Python path
@@ -69,8 +70,16 @@ def log_extension_message(request: LogRequest):
 
 # Global in-memory session store
 sessions: Dict[str, Dict[str, Any]] = {}
-SESSIONS_DIR = Path("data/sessions")
-RESULTS_DIR = Path("data/results")
+
+# Check if running on Vercel or similar read-only environment
+IS_VERCEL = "VERCEL" in os.environ
+if IS_VERCEL:
+    TEMP_BASE_DIR = Path("/tmp/sachcheck")
+else:
+    TEMP_BASE_DIR = BACKEND_DIR.parent
+
+SESSIONS_DIR = TEMP_BASE_DIR / "data" / "sessions"
+RESULTS_DIR = TEMP_BASE_DIR / "data" / "results"
 
 # Ensure directories exist
 SESSIONS_DIR.mkdir(parents=True, exist_ok=True)
@@ -88,6 +97,10 @@ class TextCheckRequest(BaseModel):
 class URLCheckRequest(BaseModel):
     url: str
     segments: Optional[List[Dict[str, Any]]] = None
+    mock: Optional[bool] = False
+
+class TextFactCheckRequest(BaseModel):
+    text: str
     mock: Optional[bool] = False
 
 def get_session_file_path(session_id: str) -> Path:
@@ -607,6 +620,57 @@ def group_browser_segments(segments: List[Dict[str, Any]]) -> List[Dict[str, Any
         
     return turns
 
+async def process_claim_e2e(claim: Dict[str, Any], loop: asyncio.AbstractEventLoop) -> Dict[str, Any]:
+    """
+    Shared helper to process a single claim:
+    First attempts Fast Path (recycled match), then falls back to Deep Path (search + RAG).
+    """
+    claim_text = claim.get("text", "")
+    speaker = claim.get("speaker", "Unknown")
+    
+    # A. Fast Path: Recycled Match
+    try:
+        matched_fc = await loop.run_in_executor(
+            None,
+            lambda: match_claim(claim_text)
+        )
+    except Exception as match_err:
+        logger.error(f"Fast path match failed for '{claim_text}': {match_err}")
+        matched_fc = None
+        
+    if matched_fc:
+        logger.info(f"Fast Path Match! Reusing context card for: \"{claim_text}\"")
+        context_card = matched_fc.copy()
+        context_card["claim_text"] = claim_text
+        context_card["speaker"] = speaker
+        context_card["is_recycled"] = True
+        return context_card
+        
+    # B. Deep Path: Search + RAG
+    logger.info(f"Deep Path: Running search & RAG for: \"{claim_text}\"")
+    try:
+        search_results = await loop.run_in_executor(
+            None,
+            lambda: search_for_claim(claim)
+        )
+    except Exception as search_err:
+        logger.error(f"Search failed for '{claim_text}': {search_err}")
+        search_results = []
+        
+    try:
+        context_card = await loop.run_in_executor(
+            None,
+            lambda: generate_context_card(claim, search_results)
+        )
+        return context_card
+    except Exception as rag_err:
+        logger.error(f"RAG card generation failed for '{claim_text}': {rag_err}")
+        return {
+            "claim_text": claim_text,
+            "speaker": speaker,
+            "error": f"Failed to generate context card: {str(rag_err)}"
+        }
+
 @app.post("/api/factcheck/url")
 async def factcheck_url(request: URLCheckRequest):
     """
@@ -648,7 +712,7 @@ async def factcheck_url(request: URLCheckRequest):
             
             # Fallback path: download audio and run ASR
             try:
-                temp_dir = Path("data/audio")
+                temp_dir = TEMP_BASE_DIR / "data" / "audio"
                 temp_dir.mkdir(parents=True, exist_ok=True)
                 
                 # Download audio
@@ -700,61 +764,13 @@ async def factcheck_url(request: URLCheckRequest):
         logger.error(f"Claim extraction failed: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to extract claims: {str(e)}")
         
-    # 5. Process claims concurrently using asyncio.gather
-    async def process_single_claim(claim: Dict[str, Any]) -> Dict[str, Any]:
-        claim_text = claim.get("text", "")
-        speaker = claim.get("speaker", "Unknown")
-        
-        # A. Fast Path: Recycled Match
-        try:
-            matched_fc = await loop.run_in_executor(
-                None,
-                lambda: match_claim(claim_text)
-            )
-        except Exception as match_err:
-            logger.error(f"Fast path match failed for '{claim_text}': {match_err}")
-            matched_fc = None
-            
-        if matched_fc:
-            logger.info(f"Fast Path Match! Reusing context card for: \"{claim_text}\"")
-            context_card = matched_fc.copy()
-            context_card["claim_text"] = claim_text
-            context_card["speaker"] = speaker
-            context_card["is_recycled"] = True
-            return context_card
-            
-        # B. Deep Path: Search + RAG
-        logger.info(f"Deep Path: Running search & RAG for: \"{claim_text}\"")
-        try:
-            search_results = await loop.run_in_executor(
-                None,
-                lambda: search_for_claim(claim)
-            )
-        except Exception as search_err:
-            logger.error(f"Search failed for '{claim_text}': {search_err}")
-            search_results = []
-            
-        try:
-            context_card = await loop.run_in_executor(
-                None,
-                lambda: generate_context_card(claim, search_results)
-            )
-            return context_card
-        except Exception as rag_err:
-            logger.error(f"RAG card generation failed for '{claim_text}': {rag_err}")
-            return {
-                "claim_text": claim_text,
-                "speaker": speaker,
-                "error": f"Failed to generate context card: {str(rag_err)}"
-            }
-            
-    # Compile list of check-worthy claims to process
+    # 5. Process claims concurrently using shared helper
     check_worthy_claims = [c for c in all_claims if c.get("check_worthy")]
     
     context_cards = []
     if check_worthy_claims:
         logger.info(f"Found {len(check_worthy_claims)} check-worthy claims. Processing concurrently...")
-        context_cards = await asyncio.gather(*(process_single_claim(c) for c in check_worthy_claims))
+        context_cards = await asyncio.gather(*(process_claim_e2e(c, loop) for c in check_worthy_claims))
         logger.info(f"Successfully generated {len(context_cards)} context cards.")
         
     # Compile ignored claims
@@ -772,6 +788,134 @@ async def factcheck_url(request: URLCheckRequest):
         "transcript": raw_turns,
         "context_cards": context_cards,
         "ignored_claims": ignored_claims
+    }
+
+@app.post("/api/factcheck/text")
+async def factcheck_text(request: TextFactCheckRequest):
+    """
+    Fact-checks a raw transcript text turn-by-turn.
+    Extracts claims, runs the hybrid routing engine (Fast/Deep path), and returns context cards.
+    """
+    text = request.text.strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="Text transcript cannot be empty.")
+        
+    logger.info(f"Received text fact-check request (Mock: {request.mock})")
+    
+    # 1. Handle Mock Mode
+    if request.mock:
+        logger.info("Mock mode enabled for text. Returning mock fact-check report.")
+        # We can return the MOCK_URL_REPORT but with a custom transcript
+        mock_report = MOCK_URL_REPORT.copy()
+        mock_report["transcript"] = [
+            {"speaker": "Anchor", "text": "Swagat hai aapka. Aaj hum baat karenge desh mein berozgari aur naukriyon ke baare mein."},
+            {"speaker": "Pravakta A", "text": "Government ne har saal do crore naukriyon dene ka promise kiya tha. PLFS data dikhata hai ki youth unemployment 15% touch kar raha hai."},
+            {"speaker": "Pravakta B", "text": "Hamari sarkar ne EPFO data ke mutabik pichle saal hi 1.3 crore jobs generate ki hain. Aur mudra loan scheme ke under 40 crore se zyada loans diye hain."},
+            {"speaker": "Pravakta A", "text": "EPFO data real jobs nahi dikhata. Mudra loans se koi real employment nahi create ho raha, average loan size bohot chota hai."}
+        ]
+        return mock_report
+        
+    # 2. Analyze Claims from input text
+    loop = asyncio.get_running_loop()
+    try:
+        all_claims = await loop.run_in_executor(
+            None,
+            lambda: analyze_transcript_claims(text)
+        )
+    except Exception as e:
+        logger.error(f"Claim extraction failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to extract claims: {str(e)}")
+        
+    # 3. Process claims concurrently using the shared process_claim_e2e helper
+    check_worthy_claims = [c for c in all_claims if c.get("check_worthy")]
+    
+    context_cards = []
+    if check_worthy_claims:
+        logger.info(f"Found {len(check_worthy_claims)} check-worthy claims. Processing concurrently...")
+        context_cards = await asyncio.gather(*(process_claim_e2e(c, loop) for c in check_worthy_claims))
+        logger.info(f"Successfully generated {len(context_cards)} context cards.")
+        
+    # 4. Compile ignored claims
+    ignored_claims = []
+    for claim in all_claims:
+        if not claim.get("check_worthy"):
+            ignored_claims.append({
+                "speaker": claim.get("speaker", "Unknown"),
+                "text": claim.get("text", ""),
+                "reason_check_worthy": claim.get("reason_check_worthy", "Filtered out.")
+            })
+            
+    # Parse text lines into turns for the frontend transcript display
+    transcript_turns = []
+    for line in text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        if ":" in line:
+            parts = line.split(":", 1)
+            speaker = parts[0].strip()
+            speech_text = parts[1].strip()
+        else:
+            speaker = "Speaker"
+            speech_text = line
+        transcript_turns.append({
+            "speaker": speaker,
+            "text": speech_text
+        })
+            
+    return {
+        "status": "success",
+        "transcript": transcript_turns,
+        "context_cards": context_cards,
+        "ignored_claims": ignored_claims
+    }
+
+@app.get("/api/system/status")
+def get_system_status():
+    """
+    Returns system readiness state, API keys configuration status,
+    and loaded database and cache statistics.
+    """
+    gemini_key = os.getenv("GEMINI_API_KEY", "")
+    serper_key = os.getenv("SERPER_API_KEY", "")
+    sarvam_key = os.getenv("SARVAM_API_KEY", "")
+    
+    has_gemini = bool(gemini_key and not gemini_key.startswith("your_"))
+    has_serper = bool(serper_key and not serper_key.startswith("your_"))
+    has_sarvam = bool(sarvam_key and not sarvam_key.startswith("your_"))
+    
+    db_size = 0
+    db_file = BACKEND_DIR.parent / "data" / "debunked_db.json"
+    if db_file.exists():
+        try:
+            with open(db_file, "r", encoding="utf-8") as f:
+                db_data = json.load(f)
+                db_size = len(db_data)
+        except Exception as e:
+            logger.error(f"Failed to read debunked_db.json size: {e}")
+            
+    cache_size = 0
+    cache_file = BACKEND_DIR.parent / "data" / "embedding_cache.json"
+    if cache_file.exists():
+        try:
+            with open(cache_file, "r", encoding="utf-8") as f:
+                cache_data = json.load(f)
+                cache_size = len(cache_data)
+        except Exception:
+            pass
+
+    return {
+        "status": "online",
+        "api_keys": {
+            "gemini": has_gemini,
+            "serper": has_serper,
+            "sarvam": has_sarvam
+        },
+        "database": {
+            "seeded_claims_count": db_size,
+            "cached_embeddings_count": cache_size
+        },
+        "system_time": time.time()
     }
 
 @app.get("/api/session/{session_id}/status")
@@ -834,6 +978,11 @@ def stop_session(session_id: str):
         "report_saved_to": str(report_file.name),
         "message": "Session stopped and temporary storage cleaned up."
     }
+
+# Mount static files for the web dashboard at the root URL
+static_dir = BACKEND_DIR / "static"
+static_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/", StaticFiles(directory=str(static_dir), html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn

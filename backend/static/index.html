@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SachCheck — Fact-Checking Dashboard & Playground</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="dashboard-grid">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo-dot animate-pulse"></div>
+        <h1 class="logo-text">SachCheck</h1>
+      </div>
+      <p class="brand-sub">Real-Time political fact-checking brain</p>
+
+      <nav class="nav-menu">
+        <button id="tab-youtube" class="nav-item active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+          <span>YouTube Scanner</span>
+        </button>
+        <button id="tab-transcript" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Transcript Playground</span>
+        </button>
+        <button id="tab-diagnostics" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="11" y2="17"/></svg>
+          <span>System Diagnostics</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-health">
+          <div class="indicator-glow connected" id="system-indicator"></div>
+          <span class="status-lbl" id="system-status-lbl">Checking Backend...</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Container -->
+    <main class="main-workspace">
+      <!-- Top Header Controls -->
+      <header class="workspace-header">
+        <div class="header-title-area">
+          <h2 id="current-tab-title">YouTube Video Scanner</h2>
+          <p id="current-tab-desc" class="tab-subtitle">Extract, transcribe, and fact-check YouTube videos using the hybrid engine.</p>
+        </div>
+        
+        <div class="global-controls">
+          <div class="mock-toggle-wrapper">
+            <label class="switch">
+              <input type="checkbox" id="mock-mode-toggle" checked>
+              <span class="slider round"></span>
+            </label>
+            <div class="mock-info">
+              <span class="mock-label">Mock Mode</span>
+              <span class="mock-subtext">Uses cached/simulated cards to bypass API costs</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <div class="workspace-content">
+        
+        <!-- Tab 1: YouTube Scanner Content -->
+        <div class="workspace-pane active" id="pane-youtube">
+          <div class="card input-card">
+            <div class="youtube-input-group">
+              <div class="yt-icon-box">
+                <svg viewBox="0 0 24 24" fill="#ef4444" width="36" height="36">
+                  <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.107C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.388.511a3.002 3.002 0 0 0-2.11 2.107C0 8.047 0 12 0 12s0 3.953.502 5.837a3.002 3.002 0 0 0 2.11 2.107c1.883.511 9.388.511 9.388.511s7.505 0 9.388-.511a3.002 3.002 0 0 0 2.11-2.107C24 15.953 24 12 24 12s0-3.953-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+              </div>
+              <div class="input-wrapper">
+                <label for="yt-url-input" class="input-label">Enter YouTube Video URL</label>
+                <input type="text" id="yt-url-input" placeholder="e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="dashboard-input">
+              </div>
+              <button id="btn-scan-yt" class="btn btn-primary">Fact-Check Video</button>
+            </div>
+            <div class="quick-examples">
+              <span class="example-lbl">Try standard templates:</span>
+              <button class="btn-example-url" data-url="https://www.youtube.com/watch?v=debatedemo-epfo-mudra">Hinglish Job Debate (EPFO & Mudra Scheme)</button>
+              <button class="btn-example-url" data-url="https://www.youtube.com/watch?v=highway-speed-limit-factcheck">Infrastructure Claims (Highway Limits)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Transcript Playground Content -->
+        <div class="workspace-pane" id="pane-transcript">
+          <div class="card input-card">
+            <div class="text-input-group">
+              <label for="transcript-textarea" class="input-label">Paste or Write Hinglish Transcript</label>
+              <p class="input-desc">Include speaker tags (e.g., <code>Speaker A: text</code>) on new lines to enable precise attribution.</p>
+              <textarea id="transcript-textarea" placeholder="Pravakta A: Mudra loan scheme ke under humne 40 crore se zyada loans diye hain, jisse log self-employed ban rahe hain.&#10;Pravakta B: Lekin average loan size bohot chota hai, isse koi real job nahi create ho raha." class="dashboard-textarea"></textarea>
+              <div class="textarea-actions">
+                <button class="btn btn-secondary" id="btn-clear-text">Clear Text</button>
+                <button class="btn btn-secondary" id="btn-load-sample">Load Sample Transcript</button>
+                <button class="btn btn-primary" id="btn-scan-text">Analyze Claims</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: System Diagnostics Content -->
+        <div class="workspace-pane" id="pane-diagnostics">
+          <div class="diagnostics-grid">
+            <!-- API Keys Config -->
+            <div class="card stats-card">
+              <h3>External API Integration</h3>
+              <p class="card-subtitle">State of connected keys loaded from backend <code>.env</code> file.</p>
+              <div class="api-list">
+                <div class="api-item">
+                  <div class="api-info">
+                    <span class="api-name">Google Gemini API</span>
+                    <span class="api-desc">Enables claim extraction & RAG card synthesis</span>
+                  </div>
+                  <span class="status-badge" id="key-gemini">Checking...</span>
+                </div>
+                <div class="api-item">
+                  <div class="api-info">
+                    <span class="api-name">Serper Google Search API</span>
+                    <span class="api-desc">Enables deep-path real-time web grounding</span>
+                  </div>
+                  <span class="status-badge" id="key-serper">Checking...</span>
+                </div>
+                <div class="api-item">
+                  <div class="api-info">
+                    <span class="api-name">Sarvam AI Saaras API</span>
+                    <span class="api-desc">Enables fallback audio speech-to-text (ASR)</span>
+                  </div>
+                  <span class="status-badge" id="key-sarvam">Checking...</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Database / Vector stats -->
+            <div class="card stats-card">
+              <h3>Vector Grounding Cache</h3>
+              <p class="card-subtitle">Pre-computed historical claims for fast-path sub-millisecond matching.</p>
+              <div class="stat-boxes">
+                <div class="stat-box">
+                  <span class="stat-num" id="stat-db-claims">0</span>
+                  <span class="stat-label">Seeded Fact-Checks</span>
+                </div>
+                <div class="stat-box">
+                  <span class="stat-num" id="stat-cache-embeddings">0</span>
+                  <span class="stat-label">Cached Embeddings</span>
+                </div>
+              </div>
+              <div class="db-info-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="info-icon"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <p>The Fast-Path matcher triggers automatically when cosine similarity between a live claim and seeded claim exceeds <strong>0.82</strong>, bypassing LLM synthesis and external API latency.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Processing State (Visible globally during analysis) -->
+        <div id="processing-overlay" class="processing-overlay" style="display: none;">
+          <div class="spinner-container">
+            <div class="pulsing-spinner"></div>
+            <div class="progress-percent" id="loading-percentage">0%</div>
+          </div>
+          <h3 id="processing-status">Analyzing Transcript...</h3>
+          <div class="stepper-dots">
+            <span class="dot active" id="dot-1" data-label="Fetching transcript"></span>
+            <span class="dot" id="dot-2" data-label="Extracting claims"></span>
+            <span class="dot" id="dot-3" data-label="Generating RAG context"></span>
+          </div>
+          <p id="processing-substatus" class="processing-subtext">Initializing pipeline parameters...</p>
+        </div>
+
+        <!-- Results Grid (Visible after scanning) -->
+        <div id="results-workspace" class="results-grid" style="display: none;">
+          <!-- Left Column: Transcript -->
+          <div class="results-column column-transcript">
+            <div class="column-header">
+              <h3>Live Transcript</h3>
+              <span class="badge" id="badge-turns-count">0 Turns</span>
+            </div>
+            <div class="card scrollable-card" id="transcript-scroll-container">
+              <div class="transcript-list" id="rendered-transcript">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Context Cards -->
+          <div class="results-column column-cards">
+            <div class="column-header">
+              <h3>Fact-Check Context Cards</h3>
+              <span class="badge badge-accent" id="badge-cards-count">0 Grounded Cards</span>
+            </div>
+            <div class="card scrollable-card" id="cards-scroll-container">
+              <div class="cards-list" id="rendered-cards">
+                <!-- Injected via JS -->
+              </div>
+              
+              <!-- Audit Log of Ignored/Filtered Claims -->
+              <div class="audit-log-section">
+                <div class="audit-header" id="audit-toggle-btn">
+                  <h4>Filtered Assertions (Audit Log)</h4>
+                  <span class="badge" id="badge-audit-count">0 ignored</span>
+                </div>
+                <div class="audit-content" id="rendered-audit" style="display: none;">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
