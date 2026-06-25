@@ -18,7 +18,7 @@ if local_bin not in os.environ.get("PATH", ""):
 
 # Regex to extract YouTube video ID from various URL formats
 YOUTUBE_ID_REGEX = re.compile(
-    r'(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})'
+    r'(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})'
 )
 
 def extract_video_id(url: str) -> Optional[str]:
