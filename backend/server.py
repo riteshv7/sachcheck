@@ -21,6 +21,7 @@ from claims import analyze_transcript_claims
 from search import search_for_claim
 from context import generate_context_card
 from matcher import match_claim
+from youtube import get_youtube_transcript, download_youtube_audio
 
 # Setup logging
 logging.basicConfig(
@@ -83,6 +84,11 @@ class SessionStartResponse(BaseModel):
 class TextCheckRequest(BaseModel):
     text: str
     speaker: Optional[str] = "User"
+
+class URLCheckRequest(BaseModel):
+    url: str
+    segments: Optional[List[Dict[str, Any]]] = None
+    mock: Optional[bool] = False
 
 def get_session_file_path(session_id: str) -> Path:
     session_dir = SESSIONS_DIR / session_id
@@ -394,6 +400,378 @@ async def check_text_turn(session_id: str, request: TextCheckRequest):
         "status": "success",
         "new_cards": new_cards,
         "total_cards": len(session["context_cards"])
+    }
+
+# Pre-baked report for mock URL fact-checking runs to showcase UI functionality instantly
+MOCK_URL_REPORT = {
+    "status": "success",
+    "transcript": [
+        {
+            "speaker": "Anchor",
+            "start_time": 0.0,
+            "end_time": 5.2,
+            "text": "Swagat hai aapka. Aaj hum baat karenge desh mein berozgari aur naukriyon ke baare mein. Hamare sath dono paksh ke pravakta hain."
+        },
+        {
+            "speaker": "Pravakta A",
+            "start_time": 5.5,
+            "end_time": 15.8,
+            "text": "Dekhiye, desh ke yuva aaj pareshan hain. Government ne har saal do crore naukriyon dene ka promise kiya tha. But the truth is, pichle 45 saal mein sabse zyada unemployment rate aaj hai. PLFS data dikhata hai ki youth unemployment 15 percent touch kar raha hai."
+        },
+        {
+            "speaker": "Pravakta B",
+            "start_time": 16.2,
+            "end_time": 25.5,
+            "text": "Yeh bilkul galat baat hai. Hamari sarkar ne EPFO data ke mutabik pichle saal hi ek point teen crore nayi jobs generate ki hain. Aur mudra loan scheme ke under humne 40 crore se zyada loans diye hain, jisse log self-employed ban rahe hain."
+        },
+        {
+            "speaker": "Pravakta A",
+            "start_time": 25.8,
+            "end_time": 32.4,
+            "text": "EPFO data real jobs nahi dikhata, wo sirf formalisation of labor dikhata hai."
+        },
+        {
+            "speaker": "Pravakta A",
+            "start_time": 32.6,
+            "end_time": 41.0,
+            "text": "Mudra loans se koi real long-term employment nahi create ho raha hai, average loan size bohot chota hai."
+        }
+    ],
+    "context_cards": [
+        {
+            "claim_text": "pichle 45 saal mein sabse zyada unemployment rate aaj hai. PLFS data dikhata hai ki youth unemployment 15 percent touch kar raha hai.",
+            "speaker": "Pravakta A",
+            "confidence_level": "Medium",
+            "literal_claim": "The unemployment rate in India is currently at its highest in 45 years, and youth unemployment is around 15% according to PLFS data.",
+            "implied_claim": "The government has failed completely on employment generation, making the job crisis worse than at any point in modern history.",
+            "grounded_context": [
+                {
+                    "point": "The 45-year high unemployment rate of 6.1% was reported in the PLFS 2017-18 report, which was the first annual report under the new survey design.",
+                    "source_citations": [1]
+                },
+                {
+                    "point": "According to the latest PLFS annual reports (2022-23 and 2023-24), the overall national unemployment rate has decreased to 3.2%, which is a multi-year low.",
+                    "source_citations": [2]
+                },
+                {
+                    "point": "Youth unemployment (ages 15-29) was indeed high at around 17.8% in 2017-18, but has since declined to approximately 10.0% in 2022-23.",
+                    "source_citations": [1, 2]
+                }
+            ],
+            "missing_context": [
+                "The claim of a '45-year high' refers to 2017-18 data and does not reflect the current 2024-2026 economic situation, where PLFS reports show a significant recovery in employment numbers.",
+                "Comparing older NSSO surveys with the newer PLFS design has been noted by economists as methodologically inconsistent due to differences in sampling."
+            ],
+            "sources_used": [
+                {
+                    "index": 1,
+                    "title": "Periodic Labour Force Survey (PLFS) Annual Report 2017-18 - MoSPI",
+                    "url": "https://mospi.gov.in"
+                },
+                {
+                    "index": 2,
+                    "title": "Periodic Labour Force Survey (PLFS) Annual Report 2022-23 - MoSPI",
+                    "url": "https://mospi.gov.in"
+                }
+            ]
+        },
+        {
+            "claim_text": "EPFO data ke mutabik pichle saal hi ek point teen crore nayi jobs generate ki hain.",
+            "speaker": "Pravakta B",
+            "confidence_level": "Medium",
+            "literal_claim": "EPFO payroll data shows that 1.3 crore new jobs were generated in the last year.",
+            "implied_claim": "Formal job creation is booming under the current administration, proving their economic policies are highly effective.",
+            "grounded_context": [
+                {
+                    "point": "EPFO (Employees' Provident Fund Organisation) added approximately 1.3 crore net subscribers in the financial year 2022-2023.",
+                    "source_citations": [1]
+                },
+                {
+                    "point": "Economists and the reserve bank point out that net EPFO additions represent formalization of existing informal jobs rather than entirely new job creation.",
+                    "source_citations": [2]
+                }
+            ],
+            "missing_context": [
+                "EPFO subscription is mandatory for firms with 20 or more employees. An increase can be driven by formalization, regulatory compliance, or shifting of workers from unregistered firms rather than net new employment.",
+                "A significant portion of EPFO additions are individuals re-joining the fund or changing jobs, which is partially corrected in 'net' data but still contains duplicate profiles."
+            ],
+            "sources_used": [
+                {
+                    "index": 1,
+                    "title": "EPFO Payroll Data Press Release 2023 - MoSPI",
+                    "url": "https://mospi.gov.in"
+                },
+                {
+                    "index": 2,
+                    "title": "Understanding EPFO Payroll Metrics - Economic and Political Weekly",
+                    "url": "https://www.epw.in"
+                }
+            ]
+        },
+        {
+            "claim_text": "mudra loan scheme ke under humne 40 crore se zyada loans diye hain, jisse log self-employed ban rahe hain.",
+            "speaker": "Pravakta B",
+            "confidence_level": "High",
+            "literal_claim": "Over 40 crore loans have been sanctioned under the Pradhan Mantri Mudra Yojana (PMMY) to promote self-employment.",
+            "implied_claim": "The government has successfully turned millions of job seekers into job creators, resolving the unemployment crisis through entrepreneurship.",
+            "grounded_context": [
+                {
+                    "point": "As of 2023, the government reported that over 40.82 crore loans worth ₹23.2 lakh crore had been sanctioned since the inception of the Mudra scheme in 2015.",
+                    "source_citations": [1]
+                },
+                {
+                    "point": "About 83% of the sanctioned loans are in the 'Shishu' category (loans up to ₹50,000), which are primarily micro-finance loans for survivalist livelihoods rather than scalable business enterprises.",
+                    "source_citations": [2]
+                }
+            ],
+            "missing_context": [
+                "While the number of loans is high, independent studies show that the average size of Shishu loans (approx. ₹27,000) is insufficient to create sustainable, long-term employment for more than one person.",
+                "There is no comprehensive, official tracking of how many of these loans resulted in net new sustainable jobs versus sustaining existing micro-enterprises."
+            ],
+            "sources_used": [
+                {
+                    "index": 1,
+                    "title": "Pradhan Mantri Mudra Yojana Official Portal - PMMY",
+                    "url": "https://www.mudra.org.in"
+                },
+                {
+                    "index": 2,
+                    "title": "Evaluation Study on PMMY - NITI Aayog",
+                    "url": "https://niti.gov.in"
+                }
+            ]
+        }
+    ],
+    "ignored_claims": [
+        {
+            "speaker": "Anchor",
+            "text": "Swagat hai aapka. Aaj hum baat karenge desh mein berozgari aur naukriyon ke baare mein.",
+            "reason_check_worthy": "Casual welcome and topic introduction; does not assert verifiable facts."
+        },
+        {
+            "speaker": "Pravakta A",
+            "text": "Dekhiye, desh ke yuva aaj pareshan hain.",
+            "reason_check_worthy": "General opinion and characterization of public sentiment; not a verifiable statistic."
+        }
+    ]
+}
+
+def group_browser_segments(segments: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Groups raw individual caption segments (e.g. from the browser) into
+    cohesive conversational turns of approximately 15 seconds.
+    """
+    turns = []
+    current_text = []
+    current_start = None
+    current_end = None
+    chunk_duration = 15.0
+    
+    for seg in segments:
+        start = float(seg.get("start", seg.get("start_time", 0.0)))
+        duration = seg.get("duration")
+        if duration is not None:
+            end = start + float(duration)
+        else:
+            end = float(seg.get("end", seg.get("end_time", start + 2.0)))
+        text = seg.get("text", "").strip()
+        
+        if not text or text.lower() in ["[music]", "[applause]", "[laughter]"]:
+            continue
+            
+        if current_start is None:
+            current_start = start
+            current_end = end
+            current_text.append(text)
+        elif (start - current_start) < chunk_duration:
+            current_end = end
+            current_text.append(text)
+        else:
+            turns.append({
+                "speaker": "Presenter",
+                "start_time": round(current_start, 2),
+                "end_time": round(current_end, 2),
+                "text": " ".join(current_text)
+            })
+            current_start = start
+            current_end = end
+            current_text = [text]
+            
+    if current_text:
+        turns.append({
+            "speaker": "Presenter",
+            "start_time": round(current_start, 2),
+            "end_time": round(current_end, 2),
+            "text": " ".join(current_text)
+        })
+        
+    return turns
+
+@app.post("/api/factcheck/url")
+async def factcheck_url(request: URLCheckRequest):
+    """
+    Fact-checks a full YouTube video URL.
+    Returns the complete transcript turns, context cards, and ignored claims.
+    Supports instant caption extraction, with fallback to ASR transcription.
+    Also supports client-extracted captions passed in the payload.
+    """
+    url = request.url.strip()
+    if not url:
+        raise HTTPException(status_code=400, detail="URL cannot be empty.")
+        
+    logger.info(f"Received URL fact-check request for: {url} (Mock: {request.mock})")
+    
+    # 1. Handle Mock Mode
+    if request.mock:
+        logger.info("Mock mode enabled. Returning pre-baked fact-check report.")
+        return MOCK_URL_REPORT
+        
+    # 2. Get Video ID
+    from youtube import extract_video_id
+    video_id = extract_video_id(url)
+    if not video_id:
+        raise HTTPException(status_code=400, detail="Invalid YouTube URL format. Could not extract video ID.")
+        
+    # 3. Retrieve/Transcribe Transcript
+    raw_turns = []
+    
+    if request.segments:
+        logger.info(f"Using {len(request.segments)} browser-provided segments for URL: {url}")
+        raw_turns = group_browser_segments(request.segments)
+    else:
+        # Try fetching server-side captions first
+        try:
+            raw_turns = get_youtube_transcript(url)
+            logger.info(f"Successfully retrieved server-side captions for {url}. Total turns: {len(raw_turns)}")
+        except Exception as e:
+            logger.warning(f"Could not retrieve server-side captions for {url}: {e}. Falling back to audio download and ASR...")
+            
+            # Fallback path: download audio and run ASR
+            try:
+                temp_dir = Path("data/audio")
+                temp_dir.mkdir(parents=True, exist_ok=True)
+                
+                # Download audio
+                audio_path = download_youtube_audio(url, temp_dir)
+                logger.info(f"Downloaded audio to {audio_path}. Starting transcription...")
+                
+                # Run transcription (in-executor since it's blocking/CPU)
+                loop = asyncio.get_running_loop()
+                raw_segments = await loop.run_in_executor(
+                    None,
+                    lambda: transcribe_audio(str(audio_path), force_mock=False)
+                )
+                
+                # Clean up downloaded audio file
+                try:
+                    if audio_path.exists():
+                        audio_path.unlink()
+                except Exception as cleanup_err:
+                    logger.error(f"Failed to delete temporary audio file: {cleanup_err}")
+                
+                # Run LLM cleanup pass on raw ASR segments
+                raw_turns = await loop.run_in_executor(
+                    None,
+                    lambda: llm_cleanup_transcript(raw_segments)
+                )
+                logger.info(f"ASR & LLM cleanup complete. Total turns: {len(raw_turns)}")
+                
+            except Exception as fallback_err:
+                logger.error(f"Fallback audio transcription failed: {fallback_err}")
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Failed to transcribe video audio: {str(fallback_err)}"
+                )
+                
+    if not raw_turns:
+        raise HTTPException(status_code=500, detail="Could not retrieve or generate transcript for the video.")
+        
+    # 4. Extract claims from the transcript in a single pass
+    # Format the transcript text for claim analysis
+    transcript_text = "\n".join(f"{t['speaker']}: {t['text']}" for t in raw_turns)
+    
+    loop = asyncio.get_running_loop()
+    try:
+        all_claims = await loop.run_in_executor(
+            None,
+            lambda: analyze_transcript_claims(transcript_text)
+        )
+    except Exception as e:
+        logger.error(f"Claim extraction failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to extract claims: {str(e)}")
+        
+    # 5. Process claims concurrently using asyncio.gather
+    async def process_single_claim(claim: Dict[str, Any]) -> Dict[str, Any]:
+        claim_text = claim.get("text", "")
+        speaker = claim.get("speaker", "Unknown")
+        
+        # A. Fast Path: Recycled Match
+        try:
+            matched_fc = await loop.run_in_executor(
+                None,
+                lambda: match_claim(claim_text)
+            )
+        except Exception as match_err:
+            logger.error(f"Fast path match failed for '{claim_text}': {match_err}")
+            matched_fc = None
+            
+        if matched_fc:
+            logger.info(f"Fast Path Match! Reusing context card for: \"{claim_text}\"")
+            context_card = matched_fc.copy()
+            context_card["claim_text"] = claim_text
+            context_card["speaker"] = speaker
+            context_card["is_recycled"] = True
+            return context_card
+            
+        # B. Deep Path: Search + RAG
+        logger.info(f"Deep Path: Running search & RAG for: \"{claim_text}\"")
+        try:
+            search_results = await loop.run_in_executor(
+                None,
+                lambda: search_for_claim(claim)
+            )
+        except Exception as search_err:
+            logger.error(f"Search failed for '{claim_text}': {search_err}")
+            search_results = []
+            
+        try:
+            context_card = await loop.run_in_executor(
+                None,
+                lambda: generate_context_card(claim, search_results)
+            )
+            return context_card
+        except Exception as rag_err:
+            logger.error(f"RAG card generation failed for '{claim_text}': {rag_err}")
+            return {
+                "claim_text": claim_text,
+                "speaker": speaker,
+                "error": f"Failed to generate context card: {str(rag_err)}"
+            }
+            
+    # Compile list of check-worthy claims to process
+    check_worthy_claims = [c for c in all_claims if c.get("check_worthy")]
+    
+    context_cards = []
+    if check_worthy_claims:
+        logger.info(f"Found {len(check_worthy_claims)} check-worthy claims. Processing concurrently...")
+        context_cards = await asyncio.gather(*(process_single_claim(c) for c in check_worthy_claims))
+        logger.info(f"Successfully generated {len(context_cards)} context cards.")
+        
+    # Compile ignored claims
+    ignored_claims = []
+    for claim in all_claims:
+        if not claim.get("check_worthy"):
+            ignored_claims.append({
+                "speaker": claim.get("speaker", "Unknown"),
+                "text": claim.get("text", ""),
+                "reason_check_worthy": claim.get("reason_check_worthy", "Filtered out.")
+            })
+            
+    return {
+        "status": "success",
+        "transcript": raw_turns,
+        "context_cards": context_cards,
+        "ignored_claims": ignored_claims
     }
 
 @app.get("/api/session/{session_id}/status")

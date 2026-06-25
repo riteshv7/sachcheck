@@ -39,9 +39,55 @@
 
     <!-- Main Content Grid -->
     <main class="main-content">
-      <!-- Controls -->
-      <section class="control-section">
-        <button id="action-btn" class="btn btn-primary">Start Fact-Checking</button>
+      <!-- Fact-Checking Control & Modes -->
+      <section class="modes-card">
+        <div class="modes-tabs">
+          <button id="tab-scan" class="tab-btn active">YouTube Video Scan</button>
+          <button id="tab-live" class="tab-btn">Live Recorder (Legacy)</button>
+        </div>
+        
+        <!-- Mode 1: YouTube Video Scan -->
+        <div class="tab-content" id="scan-content">
+          <div class="url-detector">
+            <div class="youtube-icon-wrapper">
+              <svg class="youtube-icon" viewBox="0 0 24 24" fill="#ef4444" width="24" height="24">
+                <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.107C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.388.511a3.002 3.002 0 0 0-2.11 2.107C0 8.047 0 12 0 12s0 3.953.502 5.837a3.002 3.002 0 0 0 2.11 2.107c1.883.511 9.388.511 9.388.511s7.505 0 9.388-.511a3.002 3.002 0 0 0 2.11-2.107C24 15.953 24 12 24 12s0-3.953-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+              </svg>
+            </div>
+            <div class="detector-info">
+              <h3 id="video-status-title">Detecting Active Tab...</h3>
+              <p id="video-status-url" class="video-url">Retrieving browser tab...</p>
+            </div>
+          </div>
+          
+          <!-- Manual paste fallback if not on a YouTube page -->
+          <div id="manual-url-box" class="manual-url-box" style="display: none;">
+            <input type="text" id="manual-url-input" placeholder="Or paste YouTube URL here..." class="url-input">
+          </div>
+          
+          <button id="scan-btn" class="btn btn-primary btn-full">Fact-Check Video</button>
+          
+          <!-- Progress Steps -->
+          <div id="scan-progress" class="scan-progress" style="display: none;">
+            <div class="progress-spinner-container">
+              <div class="progress-spinner"></div>
+              <div class="progress-percentage" id="progress-percentage">0%</div>
+            </div>
+            <div class="progress-text-steps">
+              <span class="step" id="step-1">1. Fetching Transcript</span>
+              <span class="step" id="step-2">2. Analyzing Claims</span>
+              <span class="step" id="step-3">3. Verifying Context</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Mode 2: Live Recorder (Legacy) -->
+        <div class="tab-content" id="live-content" style="display: none;">
+          <div class="live-rec-desc">
+            <p>Captures real-time audio from this browser tab. Best for live streams, news broadcasts, or video clips without captions.</p>
+          </div>
+          <button id="action-btn" class="btn btn-primary btn-full">Start Live Fact-Checking</button>
+        </div>
       </section>
 
       <!-- Live Transcript Panel -->

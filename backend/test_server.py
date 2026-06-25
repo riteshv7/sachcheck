@@ -147,5 +147,69 @@ class TestSachCheckServer(unittest.TestCase):
         report_path.unlink()
         print("  E2E Session Lifecycle Test completed successfully.")
 
+    def test_factcheck_url_endpoint(self):
+        print("\n--- Starting URL Fact-Checking Endpoint Test ---")
+        
+        # 1. Test Mock Mode
+        print("Step 1: Testing Mock Mode URL Fact-check...")
+        payload = {
+            "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+            "mock": True
+        }
+        response = self.client.post("/api/factcheck/url", json=payload)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["status"], "success")
+        self.assertIn("transcript", data)
+        self.assertIn("context_cards", data)
+        self.assertTrue(len(data["context_cards"]) > 0)
+        print("  Mock Mode URL Factcheck returned pre-baked report successfully.")
+
+        # 2. Test Real Mode with Browser Segments (Mocking pipeline calls to run fast and offline)
+        print("\nStep 2: Testing Real Mode URL Fact-check with browser segments (mocked pipeline)...")
+        from unittest.mock import patch
+        
+        with patch('server.analyze_transcript_claims') as mock_analyze, \
+             patch('server.search_for_claim') as mock_search, \
+             patch('server.generate_context_card') as mock_generate:
+            
+            mock_analyze.return_value = [
+                {
+                    "text": "Youth unemployment 15 percent touch kar raha hai.",
+                    "speaker": "Presenter",
+                    "check_worthy": True,
+                    "claim_type": "number",
+                    "reason_check_worthy": "Verifiable unemployment statistic."
+                }
+            ]
+            mock_search.return_value = [{"title": "Unemployment Report", "url": "https://mospi.gov.in"}]
+            mock_generate.return_value = {
+                "claim_text": "Youth unemployment 15 percent touch kar raha hai.",
+                "speaker": "Presenter",
+                "confidence_level": "High",
+                "literal_claim": "Youth unemployment is 15%.",
+                "implied_claim": "High unemployment rate.",
+                "grounded_context": [{"point": "Youth unemployment rate.", "source_citations": [1]}],
+                "missing_context": [],
+                "sources_used": [{"index": 1, "title": "Unemployment Report", "url": "https://mospi.gov.in"}]
+            }
+
+            payload_real = {
+                "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                "segments": [
+                    {"text": "Hello world.", "start": 0.0, "duration": 2.0},
+                    {"text": "Youth unemployment 15 percent touch kar raha hai.", "start": 2.0, "duration": 3.0}
+                ],
+                "mock": False
+            }
+            
+            response = self.client.post("/api/factcheck/url", json=payload_real)
+            self.assertEqual(response.status_code, 200)
+            real_data = response.json()
+            self.assertEqual(real_data["status"], "success")
+            self.assertEqual(len(real_data["context_cards"]), 1)
+            self.assertEqual(real_data["context_cards"][0]["speaker"], "Presenter")
+            print("  Real Mode URL Factcheck with browser segments processed successfully.")
+
 if __name__ == "__main__":
     unittest.main()

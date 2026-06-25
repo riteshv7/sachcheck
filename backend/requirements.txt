@@ -8,3 +8,6 @@ sarvamai
 fastapi>=0.110.0
 uvicorn>=0.28.0
 python-multipart>=0.0.9
+youtube-transcript-api>=0.6.2
+yt-dlp>=2024.3.10
+

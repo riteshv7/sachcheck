@@ -47,8 +47,26 @@ const cardsContainer = document.getElementById("cards-container");
 const cardsEmpty = document.getElementById("cards-empty");
 const cardsCount = document.getElementById("cards-count");
 
+// New DOM Elements for YouTube URL scan
+const tabScan = document.getElementById("tab-scan");
+const tabLive = document.getElementById("tab-live");
+const scanContent = document.getElementById("scan-content");
+const liveContent = document.getElementById("live-content");
+const scanBtn = document.getElementById("scan-btn");
+const scanProgress = document.getElementById("scan-progress");
+const progressPercentage = document.getElementById("progress-percentage");
+const step1 = document.getElementById("step-1");
+const step2 = document.getElementById("step-2");
+const step3 = document.getElementById("step-3");
+const videoStatusTitle = document.getElementById("video-status-title");
+const videoStatusUrl = document.getElementById("video-status-url");
+const manualUrlBox = document.getElementById("manual-url-box");
+const manualUrlInput = document.getElementById("manual-url-input");
+
 let renderedTurnsCount = 0;
 let renderedCardsSignatures = new Set();
+let currentTabUrl = "";
+let currentTabId = null;
 
 // Initialize UI and check server health
 document.addEventListener("DOMContentLoaded", async () => {
@@ -66,6 +84,38 @@ document.addEventListener("DOMContentLoaded", async () => {
   setInterval(checkServerHealth, 5000);
   
   actionBtn.addEventListener("click", toggleFactChecking);
+  scanBtn.addEventListener("click", handleVideoScan);
+  
+  // Tab switching
+  tabScan.addEventListener("click", () => {
+    tabScan.classList.add("active");
+    tabLive.classList.remove("active");
+    scanContent.style.display = "flex";
+    liveContent.style.display = "none";
+    detectActiveTab();
+  });
+  
+  tabLive.addEventListener("click", () => {
+    tabLive.classList.add("active");
+    tabScan.classList.remove("active");
+    liveContent.style.display = "flex";
+    scanContent.style.display = "none";
+  });
+
+  // Listen for tab activation to update active YouTube video in side panel
+  chrome.tabs.onActivated.addListener(() => {
+    detectActiveTab();
+  });
+  
+  // Listen for tab updates (e.g. navigation)
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (tabId === currentTabId && changeInfo.url) {
+      detectActiveTab();
+    }
+  });
+
+  // Run initial tab detection
+  detectActiveTab();
 
   // Synchronize with any active session
   logToServer("info", "Sending PANEL_READY handshake to background service worker...");
@@ -408,4 +458,218 @@ function appendShimmerPlaceholder() {
   `;
   cardsContainer.appendChild(shimmer);
   cardsContainer.scrollTop = cardsContainer.scrollHeight;
+}
+
+// Phase 4: YouTube URL Scanning and Caption Extraction Helper Functions
+
+async function detectActiveTab() {
+  try {
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tabs && tabs[0]) {
+      const tab = tabs[0];
+      currentTabId = tab.id;
+      currentTabUrl = tab.url || "";
+      
+      const isYouTube = currentTabUrl.includes("youtube.com/watch") || currentTabUrl.includes("youtu.be/");
+      
+      if (isYouTube) {
+        videoStatusTitle.textContent = tab.title ? (tab.title.length > 45 ? tab.title.substring(0, 45) + "..." : tab.title) : "YouTube Video Detected";
+        videoStatusUrl.textContent = currentTabUrl;
+        manualUrlBox.style.display = "none";
+        logToServer("info", `Detected active YouTube tab: ${currentTabUrl}`);
+      } else {
+        videoStatusTitle.textContent = "No YouTube Video Detected";
+        videoStatusUrl.textContent = "Active tab is not a YouTube video watch page.";
+        manualUrlBox.style.display = "block";
+      }
+    }
+  } catch (err) {
+    logToServer("error", "Error detecting active tab", err.message);
+    videoStatusTitle.textContent = "Error detecting tab";
+    videoStatusUrl.textContent = "Could not retrieve active tab URL.";
+    manualUrlBox.style.display = "block";
+  }
+}
+
+async function handleVideoScan() {
+  let targetUrl = currentTabUrl;
+  let useContentScript = false;
+  
+  const isYouTube = currentTabUrl.includes("youtube.com/watch") || currentTabUrl.includes("youtu.be/");
+  
+  // Check if we are using the manual pasted URL
+  if (!isYouTube || manualUrlBox.style.display === "block") {
+    const pastedUrl = manualUrlInput.value.trim();
+    if (!pastedUrl) {
+      alert("Please paste a valid YouTube video URL first.");
+      return;
+    }
+    const isPastedYT = pastedUrl.includes("youtube.com/watch") || pastedUrl.includes("youtu.be/");
+    if (!isPastedYT) {
+      alert("Only YouTube URLs are supported for scanning.");
+      return;
+    }
+    targetUrl = pastedUrl;
+  } else {
+    useContentScript = true;
+  }
+  
+  logToServer("info", `Starting video scan for: ${targetUrl} (Use content script: ${useContentScript})`);
+  
+  // Disable button, show progress
+  scanBtn.disabled = true;
+  scanBtn.textContent = "Fact-checking...";
+  scanProgress.style.display = "flex";
+  
+  // Reset progress steps
+  step1.className = "step active";
+  step2.className = "step";
+  step3.className = "step";
+  progressPercentage.textContent = "0%";
+  
+  // Start simulated progress
+  let progress = 0;
+  const progressInterval = setInterval(() => {
+    if (progress < 90) {
+      progress += Math.floor(Math.random() * 5) + 1;
+      if (progress > 90) progress = 90;
+      progressPercentage.textContent = `${progress}%`;
+      
+      // Update step active states based on percentage
+      if (progress >= 30 && progress < 60) {
+        step1.className = "step done";
+        step2.className = "step active";
+      } else if (progress >= 60) {
+        step2.className = "step done";
+        step3.className = "step active";
+      }
+    }
+  }, 300);
+  
+  let segments = null;
+  
+  // 1. Browser-assisted caption extraction
+  if (useContentScript && currentTabId) {
+    try {
+      logToServer("info", "Injecting content script to extract captions...");
+      
+      // Inject script to extract window.ytInitialPlayerResponse
+      const injectionResults = await chrome.scripting.executeScript({
+        target: { tabId: currentTabId },
+        world: 'MAIN',
+        func: () => {
+          try {
+            const response = window.ytInitialPlayerResponse || (window.yt && window.yt.config_ && window.yt.config_.PLAYER_CONFIG && window.yt.config_.PLAYER_CONFIG.args && window.yt.config_.PLAYER_CONFIG.args.raw_player_response);
+            if (!response || !response.captions || !response.captions.playerCaptionsTracklistRenderer) {
+              return null;
+            }
+            const tracks = response.captions.playerCaptionsTracklistRenderer.captionTracks;
+            if (!tracks || tracks.length === 0) return null;
+            
+            // Prefer Hindi, then Hinglish/English, then first available
+            let selectedTrack = tracks.find(t => t.languageCode === 'hi') ||
+                                tracks.find(t => t.languageCode === 'en-IN') ||
+                                tracks.find(t => t.languageCode === 'en') ||
+                                tracks[0];
+            return selectedTrack ? selectedTrack.baseUrl : null;
+          } catch (e) {
+            return null;
+          }
+        }
+      });
+      
+      const baseUrl = injectionResults[0]?.result;
+      if (baseUrl) {
+        logToServer("info", `Successfully extracted caption track baseUrl: ${baseUrl}`);
+        // Fetch and parse the XML track
+        const xmlResponse = await fetch(baseUrl);
+        const xmlText = await xmlResponse.text();
+        
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+        const textNodes = xmlDoc.getElementsByTagName("text");
+        
+        segments = [];
+        for (let i = 0; i < textNodes.length; i++) {
+          const node = textNodes[i];
+          const text = node.textContent || node.innerText || "";
+          const start = parseFloat(node.getAttribute("start") || "0");
+          const duration = parseFloat(node.getAttribute("dur") || "0");
+          segments.push({ text, start, duration });
+        }
+        logToServer("info", `Parsed ${segments.length} caption segments from XML in the browser.`);
+      } else {
+        logToServer("warning", "No caption tracks found in window.ytInitialPlayerResponse on active tab.");
+      }
+    } catch (err) {
+      logToServer("warning", "Failed to extract captions inside browser tab. Falling back to server-side retrieval.", err.message);
+    }
+  }
+  
+  // 2. Send POST request to backend
+  try {
+    const isMock = mockToggle.checked;
+    logToServer("info", `Sending POST /api/factcheck/url (Mock: ${isMock}). Payload size: ${segments ? segments.length : 0} segments.`);
+    
+    const startTime = Date.now();
+    const response = await fetch(`${BACKEND_URL}/api/factcheck/url`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        url: targetUrl,
+        segments: segments,
+        mock: isMock
+      })
+    });
+    
+    clearInterval(progressInterval);
+    
+    if (!response.ok) {
+      throw new Error(`Server returned HTTP ${response.status}: ${await response.text()}`);
+    }
+    
+    const data = await response.json();
+    const latency = ((Date.now() - startTime) / 1000).toFixed(1);
+    logToServer("info", `URL Fact-check complete in ${latency}s! Received ${data.transcript ? data.transcript.length : 0} turns and ${data.context_cards ? data.context_cards.length : 0} cards.`);
+    
+    // Complete progress UI
+    progressPercentage.textContent = "100%";
+    step1.className = "step done";
+    step2.className = "step done";
+    step3.className = "step done";
+    
+    // Render results
+    renderFullReport(data);
+    
+    setTimeout(() => {
+      scanProgress.style.display = "none";
+      scanBtn.disabled = false;
+      scanBtn.textContent = "Fact-Check Video";
+    }, 1000);
+    
+  } catch (err) {
+    clearInterval(progressInterval);
+    logToServer("error", "Failed to complete URL fact-check", err.message);
+    alert(`Fact-checking failed: ${err.message}\n\nPlease verify that the backend server is running and your API keys are configured.`);
+    scanProgress.style.display = "none";
+    scanBtn.disabled = false;
+    scanBtn.textContent = "Fact-Check Video";
+  }
+}
+
+function renderFullReport(data) {
+  // Clear existing UI content
+  renderedTurnsCount = 0;
+  renderedCardsSignatures.clear();
+  transcriptContainer.innerHTML = "";
+  cardsContainer.innerHTML = "";
+  transcriptEmpty.style.display = "none";
+  cardsEmpty.style.display = "none";
+  
+  // Update UI using our existing updater logic!
+  updateUIContent({
+    transcript: data.transcript,
+    context_cards: data.context_cards,
+    is_processing: false
+  });
 }
